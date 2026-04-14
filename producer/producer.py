@@ -3,7 +3,9 @@ import time
 import random
 from datetime import datetime
 import uuid
-import logging
+from kafka import KafkaProducer
+
+producer = KafkaProducer(bootstrap_servers = 'localhost:9092')
 
 #Lista simplificada para o simulador
 medicamentos = [
@@ -12,6 +14,8 @@ medicamentos = [
     {"nome": "Paracetamol", "categoria": "Analgésico", "preco": 15.00},
     {"nome": "Insulina", "categoria": "Diabetes", "preco": 89.90}
 ]
+
+
 
 def gerar_eventos_estoque():
     med = random.choice(medicamentos)
