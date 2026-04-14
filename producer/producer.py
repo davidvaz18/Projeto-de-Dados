@@ -5,7 +5,8 @@ from datetime import datetime
 import uuid
 from kafka import KafkaProducer
 
-producer = KafkaProducer(bootstrap_servers = 'localhost:9092')
+producer = KafkaProducer(bootstrap_servers = 'localhost:9092',
+value_serializer= lambda v:json.dumps(v).encode('utf-8'))
 
 #Lista simplificada para o simulador
 medicamentos = [
@@ -37,10 +38,13 @@ if __name__ == "__main__":
             while True:
                  dado = gerar_eventos_estoque()
                  print(f"[LOG]{dado['timestamp']} - {dado['medicamento']}: {dado['quantidade']} unidades")
-
+                
+                 producer.send('coba', value=dado)
 
                  time.sleep(random.uniform(0.5,3.0)) # simulando tempo real variavel
 
-                 
+                    
     except KeyboardInterrupt:
          print("\n Simulação Interrompida")
+         producer.flush()
+         producer.close()
