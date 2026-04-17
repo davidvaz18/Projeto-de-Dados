@@ -6,17 +6,30 @@ import multiprocessing
 evento_de_parada = multiprocessing.Event()  
 
 def main():
-    consumer = KafkaConsumer(bootstrap_servers = 'localhost:9092')
-    consumer.subscribe(['coba'])
-    while not evento_de_parada.is_set():
-        for message in consumer:
-            print(" Topic: " + str(message[0])
-            + "\n Message: " + str(message[6], 'utf-8')
-            + "\n Record: " + str(message))
-            if evento_de_parada.is_set():
-                break
+    consumer = KafkaConsumer(
+    'coba',
+    bootstrap_servers = 'localhost:9092',
+    auto_offset_reset = 'latest',
+    value_deserializer= lambda x: json.loads(x.decode('utf-8'))    
+    )
 
-    consumer.close()
+    print("Consumer esperando atualizações da farmácia...")
+
+    try:
+        while not evento_de_parada.is_set():
+            for message in consumer:
+                dado = message.value
+                print(f"   [RECEBIDO] Tópico: {message.topic}")
+                print(f"   Medicamento: {dado['medicamento']}")
+                print(f"   Quantidade: {dado['quantidade']}")
+                print(f"   Horário: {dado['timestamp']}")
+                print("-" * 40)
+                if evento_de_parada.is_set():
+                    break
+    except KeyboardInterrupt:
+        print("Ação interrompida")
+    finally:
+        consumer.close()
 
 if __name__ == '__main__':
     main()

@@ -7,4 +7,4 @@ try:
     print("✅ SUCESSO! O Python conseguiu falar com o Kafka.")
     producer.close()
 except Exception as e:
-    print(f"❌ ERRO: Não conectou. Motivo: {e}")
+    print(f"❌ ERRO: Não conectou. Motivo: {e}") #w
